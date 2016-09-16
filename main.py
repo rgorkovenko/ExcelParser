@@ -2,8 +2,9 @@
 
 import sys
 
-from mainform import MainForm
 from PyQt5.QtWidgets import QApplication
+
+from forms.Main import MainForm
 
 
 if __name__ == '__main__':

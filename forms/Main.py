@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from PyQt5.QtWidgets import (QWidget, QPushButton, QFileDialog,
+from PyQt5.QtWidgets import (QWidget, QErrorMessage, QPushButton, QFileDialog,
                              QVBoxLayout, QHBoxLayout, QLabel)
 
 from PyQt5.QtCore import *
@@ -8,18 +8,24 @@ from lib.ExcelController import ExcelController
 
 
 class MainForm(QWidget):
-    excel_file = ''
 
     def __init__(self):
         super().__init__(flags=Qt.Window)
 
+        self.excel_file = ''
+
         # init components
         self.label = QLabel("text")
         self.load_excel_btn = QPushButton("OK")
-        self.load_excel_btn.clicked.connect(self.open_excel_file)
+
+        # init signals and slots
+        self.init_signals_slots()
 
         # loading components on form
         self.init_ui()
+
+    def init_signals_slots(self):
+        self.load_excel_btn.clicked.connect(self.open_excel_file)
 
     def init_ui(self):
         h_box = QHBoxLayout()
@@ -38,6 +44,18 @@ class MainForm(QWidget):
 
     def open_excel_file(self):
         self.excel_file = QFileDialog.getOpenFileName(filter="Excel files (*.xls *.xlsx)")[0]
+
         excel_controller = ExcelController()
-        excel = excel_controller.load_file(self.excel_file)
+        err, excel = excel_controller.create_excel()
+
+        if err is not None:
+            self.show_error(err)
+            return
+
         self.label.setText(self.excel_file)
+
+    @staticmethod
+    def show_error(message):
+        error = QErrorMessage()
+        error.showMessage(message)
+        error.exec_()

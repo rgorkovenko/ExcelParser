@@ -3,10 +3,16 @@ import comtypes.client as cc
 
 class ExcelController:
     def __init__(self):
+        self.excel = None
+
+    def create_excel(self):
+        error = None
         try:
             self.excel = cc.CreateObject("Excel.Application")
-        except OSError as err:
-            self.excel = err
+        except OSError:
+            error = "Excel not found in your system"
+
+        return error, self.excel
 
     def test_excel(self, file_path):
         self.excel.Workbooks.Open(file_path)
