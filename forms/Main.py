@@ -12,7 +12,7 @@ class MainForm(QWidget):
     def __init__(self):
         super().__init__(flags=Qt.Window)
 
-        self.excel_file = ''
+        self.excel_file = None
 
         # init components
         self.label = QLabel("text")
