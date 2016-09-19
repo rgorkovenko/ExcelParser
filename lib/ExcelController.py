@@ -7,22 +7,23 @@ class ExcelController:
 
     def create_excel(self):
         error = None
-        try:
-            self.excel = cc.CreateObject("Excel.Application")
-        except OSError:
-            error = "Excel not found in your system"
 
-        return error, self.excel
+        # если объект екселя уже создан
+        if not self.excel:
+            try:
+                self.excel = cc.CreateObject("Excel.Application")
+            except OSError:
+                error = "Excel not found in your system"
 
-    def test_excel(self, file_path):
+        return error
+
+    def load_data(self, file_path):
         self.excel.Workbooks.Open(file_path)
-        print(self.excel.Version)
-        print(self.excel.Cells.CurrentRegion.Rows.Count)
-        print(self.excel.Cells(1, 1).Value())
+
+        # Пока обрабатываем только первую страницу
+        return self.excel.Worksheets[1].UsedRange.Formula
+
+    def close_excel(self):
         for wb in self.excel.Workbooks:
             wb.Close(0)
-            self.excel.Quit()
-
-    def load_file(self, file_path):
-        self.test_excel(file_path)
-        return self.excel
+        self.excel.Quit()
