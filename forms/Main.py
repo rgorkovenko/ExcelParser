@@ -68,7 +68,6 @@ class MainForm(QWidget):
         for i in range(len(data)):
             for j in range(len(data[i])):
                 self.table.setItem(i, j, QTableWidgetItem(data[i][j]))
-        pass
 
     @staticmethod
     def show_error(message):
