@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from PyQt5.QtWidgets import (QWidget, QErrorMessage, QPushButton, QFileDialog,
-                             QVBoxLayout, QHBoxLayout, QLabel, QTableWidget)
+                             QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, QSizePolicy)
 
 from PyQt5.QtCore import *
 from lib.ExcelController import ExcelController
@@ -15,9 +15,9 @@ class MainForm(QWidget):
         self.excel_controller = None
 
         # init components
-        self.label = QLabel("text")
         self.load_excel_btn = QPushButton("OK")
         self.table = QTableWidget()
+        self.table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         # init signals and slots
         self.init_signals_slots()
@@ -31,14 +31,10 @@ class MainForm(QWidget):
     def init_ui(self):
         h_top = QHBoxLayout()
         h_top.addWidget(self.load_excel_btn, alignment=Qt.AlignLeft | Qt.AlignTop)
-        h_top.addWidget(self.label, alignment=Qt.AlignRight | Qt.AlignTop)
-
-        h_table = QHBoxLayout()
-        h_table.addWidget(self.table, alignment=Qt.AlignCenter)
 
         v_box = QVBoxLayout()
         v_box.addLayout(h_top)
-        v_box.addLayout(h_table)
+        v_box.addWidget(self.table)
 
         self.setLayout(v_box)
 
@@ -59,8 +55,20 @@ class MainForm(QWidget):
             self.show_error(err)
             return
 
-        data = self.excel_controller.load_data(excel_path)
-        print(data)
+        # Загрузка данных в таблицу
+        self.table_load_data(self.excel_controller.load_data(excel_path))
+
+    def table_load_data(self, data):
+        if len(data) == 0:
+            return
+
+        self.table.setRowCount(len(data))
+        self.table.setColumnCount(len(data[0]))
+
+        for i in range(len(data)):
+            for j in range(len(data[i])):
+                self.table.setItem(i, j, QTableWidgetItem(data[i][j]))
+        pass
 
     @staticmethod
     def show_error(message):

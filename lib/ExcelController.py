@@ -21,9 +21,13 @@ class ExcelController:
         self.excel.Workbooks.Open(file_path)
 
         # Пока обрабатываем только первую страницу
-        return self.excel.Worksheets[1].UsedRange.Formula
+        data = self.excel.Worksheets[1].UsedRange.Formula
+        self.close_excel()
+        return data
 
     def close_excel(self):
         for wb in self.excel.Workbooks:
             wb.Close(0)
-        self.excel.Quit()
+            self.excel.Quit()
+
+        del self.excel
