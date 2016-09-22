@@ -20,12 +20,36 @@ class ExcelController:
     def load_data(self, file_path):
         self.excel.Workbooks.Open(file_path)
 
-        # Пока обрабатываем только первую страницу
-        data = self.excel.Worksheets[1].UsedRange.Formula
+        # We process only the first page
+        excel_range = self.excel.Worksheets[1].UsedRange
+
+        # parsing
+        result = []
+        for row in range(excel_range.Rows.Count):
+            result_row = []
+            for col in range(excel_range.Columns.Count):
+                cell = excel_range.Cells(row + 1, col + 1)
+                item = {'value': cell.Value(),
+                        'is_merged': cell.MergeCells,
+                        'merged_x': 1,
+                        'merged_y': 1}
+
+                area = cell.MergeArea()
+                if type(area) is tuple and cell.Value():
+                    item['merged_x'] = len(area[0])
+                    item['merged_y'] = len(area)
+
+                result_row.append(item)
+            result.append(result_row)
+
+        # return result
         self.close_excel()
-        return data
+        return result
 
     def close_excel(self):
+        if self.excel is None:
+            return
+
         for wb in self.excel.Workbooks:
             wb.Close(0)
             self.excel.Quit()

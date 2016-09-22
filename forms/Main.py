@@ -47,6 +47,8 @@ class MainForm(QWidget):
 
     def open_excel_file(self):
         excel_path = QFileDialog.getOpenFileName(filter="Excel files (*.xls *.xlsx)")[0]
+        if not excel_path:
+            return
 
         self.excel_controller = ExcelController()
 
@@ -67,7 +69,9 @@ class MainForm(QWidget):
 
         for i in range(len(data)):
             for j in range(len(data[i])):
-                self.table.setItem(i, j, QTableWidgetItem(data[i][j]))
+                item = data[i][j]
+                self.table.setItem(i, j, QTableWidgetItem(item['value']))
+                self.table.setSpan(i, j, item['merged_y'], item['merged_x'])
 
     @staticmethod
     def show_error(message):
