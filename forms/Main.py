@@ -40,8 +40,6 @@ class MainForm(QWidget):
         elif state == Qt.WindowMinimized:
             self.setWindowState(Qt.WindowNoState)
 
-        # self.setWindowState(int(settings.value('window_state')))
-
     def save_window_settings(self):
         settings = QSettings('ExcelParser')
         settings.clear()
