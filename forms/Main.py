@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from PyQt5.QtWidgets import (QWidget, QErrorMessage, QPushButton, QFileDialog,
-                             QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, QSizePolicy)
+                             QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, QSizePolicy,
+                             QSplitter)
 
 from PyQt5.QtCore import *
 from lib.ExcelController import ExcelController
@@ -16,8 +17,11 @@ class MainForm(QWidget):
 
         # init components
         self.load_excel_btn = QPushButton("OK")
-        self.table = QTableWidget()
-        self.table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.work_table = QTableWidget()
+        self.work_table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
+        self.result_table = QTableWidget()
+        self.result_table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         # init signals and slots
         self.init_signals_slots()
@@ -53,7 +57,13 @@ class MainForm(QWidget):
 
         v_box = QVBoxLayout()
         v_box.addLayout(h_top)
-        v_box.addWidget(self.table)
+
+        splitter_tables = QSplitter(Qt.Vertical)
+
+        splitter_tables.addWidget(self.work_table)
+        splitter_tables.addWidget(self.result_table)
+
+        v_box.addWidget(splitter_tables)
 
         self.setLayout(v_box)
         self.setWindowTitle('ExcelParser')
@@ -81,14 +91,14 @@ class MainForm(QWidget):
         if len(data) == 0:
             return
 
-        self.table.setRowCount(len(data))
-        self.table.setColumnCount(len(data[0]))
+        self.work_table.setRowCount(len(data))
+        self.work_table.setColumnCount(len(data[0]))
 
         for i in range(len(data)):
             for j in range(len(data[i])):
                 item = data[i][j]
-                self.table.setItem(i, j, QTableWidgetItem(item['value']))
-                self.table.setSpan(i, j, item['merged_y'], item['merged_x'])
+                self.work_table.setItem(i, j, QTableWidgetItem(item['value']))
+                self.work_table.setSpan(i, j, item['merged_y'], item['merged_x'])
 
     @staticmethod
     def show_error(message):
