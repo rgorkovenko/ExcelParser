@@ -8,7 +8,7 @@ class ExcelController:
     def create_excel(self):
         error = None
 
-        # если объект екселя уже создан
+        # If excel object was created
         if not self.excel:
             try:
                 self.excel = cc.CreateObject("Excel.Application")

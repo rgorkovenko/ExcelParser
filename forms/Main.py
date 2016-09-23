@@ -28,6 +28,25 @@ class MainForm(QWidget):
     def init_signals_slots(self):
         self.load_excel_btn.clicked.connect(self.open_excel_file)
 
+    def load_window_settings(self):
+        settings = QSettings('ExcelParser')
+        self.setGeometry(settings.value('geometry', defaultValue=QRect(200, 200, 200, 200), type=QRect))
+
+        state = settings.value('window_state')
+        if state == Qt.WindowNoState:
+            self.setWindowState(Qt.WindowNoState)
+        elif state == Qt.WindowMaximized:
+            self.setWindowState(Qt.WindowMaximized)
+        elif state == Qt.WindowMinimized:
+            self.setWindowState(Qt.WindowNoState)
+
+    def save_window_settings(self):
+        settings = QSettings('ExcelParser')
+        settings.clear()
+
+        settings.setValue('geometry', self.geometry())
+        settings.setValue('window_state', self.windowState())
+
     def init_ui(self):
         h_top = QHBoxLayout()
         h_top.addWidget(self.load_excel_btn, alignment=Qt.AlignLeft | Qt.AlignTop)
@@ -37,11 +56,9 @@ class MainForm(QWidget):
         v_box.addWidget(self.table)
 
         self.setLayout(v_box)
-
         self.setWindowTitle('ExcelParser')
 
-        # todo set user settings
-        self.setGeometry(300, 300, 500, 500)
+        self.load_window_settings()
 
         self.show()
 
@@ -57,7 +74,7 @@ class MainForm(QWidget):
             self.show_error(err)
             return
 
-        # Загрузка данных в таблицу
+        # Loading data in table
         self.table_load_data(self.excel_controller.load_data(excel_path))
 
     def table_load_data(self, data):
@@ -80,5 +97,9 @@ class MainForm(QWidget):
         error.exec_()
 
     def closeEvent(self, event):
-        # Закрываем соединение с екселем
-        self.excel_controller.close_excel()
+        # Close excel connection
+        if self.excel_controller:
+            self.excel_controller.close_excel()
+
+        # Save window settings
+        self.save_window_settings()
